@@ -1515,7 +1515,9 @@
   align-self: stretch !important;
 }
 
-.order-first {
+.order-
+
+{
   order: -1 !important;
 }
 

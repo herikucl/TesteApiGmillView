@@ -9,7 +9,7 @@
     <p>Uma empresa localizada em @Html.DisplayFor(model => model.Address)!</a>.</p>
     <tu>
         @Html.ActionLink("Funcionarios", "CompanyEmployees", new {id = Model.Id, name = Model.Name, address = Model.Address}) |
-        @Html.ActionLink("Projetos", "DetailCompany", new {id = Model.Id}) 
+        @Html.ActionLink("Projetos", "CompanyProjects",new {id = Model.Id, name = Model.Name, address = Model.Address})
     </tu>
 
 </div>

@@ -2,12 +2,16 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Npgsql;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Runtime.Loader;
 using System.Text;
+using System.Xml.Linq;
 using TesteApiGmillView.Domain.Requests.CompanyR;
 using TesteApiGmillView.Domain.Requests.EmployeeR;
+using TesteApiGmillView.Domain.Requests.ProjectR;
 using TesteApiGmillView.Domain.Response;
 using TesteApiGmillView.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -130,28 +134,10 @@ namespace TesteApiGmillView.Controllers
             return View();
         }
 
-        public IActionResult DetailEmployee(int id)
+        public IActionResult DetailEmployee(int id, string name, string document, string phone, int companyId)
         {
-            var employee = new EmployeeView { Id = id };
-            using (var client = new HttpClient())
-            {
-                var responseTask = client.GetAsync($"https://localhost:7160/api/Employee?Id={id}");
-                responseTask.Wait();
-                var result = responseTask.Result;
-
-                if (result.IsSuccessStatusCode)
-                {
-                    var readTask = result.Content.ReadAsAsync<EmployeeView>();
-                    readTask.Wait();
-                    employee = readTask.Result;
-                }
-                else
-                {
-                    employee = new EmployeeView();
-                    ModelState.AddModelError(string.Empty, "Erro no servidor. Contate o Administrador.");
-                }
-                return View(employee);
-            }
+            var company = new EmployeeView { Id = id, Name = name, Document = document,Phone = phone,CompanyId = companyId };
+            return View(company);
         }
 
         public IActionResult EmployeeProjects(int id)
@@ -179,26 +165,8 @@ namespace TesteApiGmillView.Controllers
             }
         }
 
-        public IActionResult SaveCreateCompany(string name, string address)
-        {
-            using (var client = new HttpClient())
-            {
-                var company = new CreateCompanyRequest { Name = name, Address = address };
-                var jsonString = JsonConvert.SerializeObject(company);
-
-                var httpContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
-                var responseTask = client.PostAsync($"https://localhost:7160/api/Company", httpContent);
-                responseTask.Wait();
-                var result = responseTask.Result;
-
-                if (!result.IsSuccessStatusCode)
-                {
-                    ModelState.AddModelError(string.Empty, "Erro no servidor. Contate o Administrador.");
-                }
-                return RedirectToAction("Companies");
-            }
-        }
-
+        
+        
 
         public IActionResult Companies()
         {
@@ -227,6 +195,32 @@ namespace TesteApiGmillView.Controllers
             }
         }
 
+
+        public IActionResult CreateCompany()
+        {
+            return View();
+        }
+
+        public IActionResult SaveCreateCompany(string name, string address)
+        {
+            using (var client = new HttpClient())
+            {
+                var company = new CreateCompanyRequest { Name = name, Address = address };
+                var jsonString = JsonConvert.SerializeObject(company);
+
+                var httpContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                var responseTask = client.PostAsync($"https://localhost:7160/api/Company", httpContent);
+                responseTask.Wait();
+                var result = responseTask.Result;
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    ModelState.AddModelError(string.Empty, "Erro no servidor. Contate o Administrador.");
+                }
+                return RedirectToAction("Companies");
+            }
+        }
+
         public IActionResult DeleteCompany(string id)
         {
             using (var client = new HttpClient())
@@ -249,9 +243,6 @@ namespace TesteApiGmillView.Controllers
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("https://localhost:7160/api/Company?id=");
-
-
                 var company = new Company(id, name, address);
                 var jsonString = JsonConvert.SerializeObject(company);
 
@@ -273,33 +264,11 @@ namespace TesteApiGmillView.Controllers
             return View();
         }
 
-        public IActionResult CreateCompany()
-        {
-            return View();
-        }
 
-        public IActionResult DetailCompany(int id)
+        public IActionResult DetailCompany(int id, string name, string address)
         {
-            var company = new CompanyView { Id = id };
-            using (var client = new HttpClient())
-            {
-                var responseTask = client.GetAsync($"https://localhost:7160/api/Company?Id={id}");
-                responseTask.Wait();
-                var result = responseTask.Result;
-
-                if (result.IsSuccessStatusCode)
-                {
-                    var readTask = result.Content.ReadAsAsync<CompanyView>();
-                    readTask.Wait();
-                    company = readTask.Result;
-                }
-                else
-                {
-                    company = new CompanyView();
-                    ModelState.AddModelError(string.Empty, "Erro no servidor. Contate o Administrador.");
-                }
-                return View(company);
-            }
+            var company = new CompanyView { Id = id,Name = name,Address= address };
+            return View(company);
         }
 
         public IActionResult CompanyEmployees(string id, string name, string address)
@@ -309,6 +278,160 @@ namespace TesteApiGmillView.Controllers
             using (var client = new HttpClient())
             {
                 var responseTask = client.GetAsync($"https://localhost:7160/api/Company/all/Employees?companyId={id}");
+                responseTask.Wait();
+                var result = responseTask.Result;
+
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = result.Content.ReadAsAsync<IList<EmployeeView>>();
+                    readTask.Wait();
+                    employees = readTask.Result;
+                }
+                else
+                {
+                    employees = Enumerable.Empty<EmployeeView>();
+                    ModelState.AddModelError(string.Empty, "Erro no servidor. Contate o Administrador.");
+                }
+                return View(employees);
+            }
+        }
+
+        public IActionResult CompanyProjects(string id, string name, string address)
+        {
+            IEnumerable<ProjectView> projects;
+
+            using (var client = new HttpClient())
+            {
+                var responseTask = client.GetAsync($"https://localhost:7160/api/Company/all/Projects?companyId={id}");
+                responseTask.Wait();
+                var result = responseTask.Result;
+
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = result.Content.ReadAsAsync<IList<ProjectView>>();
+                    readTask.Wait();
+                    projects = readTask.Result;
+                }
+                else
+                {
+                    projects = Enumerable.Empty<ProjectView>();
+                    ModelState.AddModelError(string.Empty, "Erro no servidor. Contate o Administrador.");
+                }
+                return View(projects);
+            }
+        }
+
+        public IActionResult Projects()
+        {
+            IEnumerable<ProjectView> projects;
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:7160/api/");
+
+                var responseTask = client.GetAsync("Project/all");
+                responseTask.Wait();
+                var result = responseTask.Result;
+
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = result.Content.ReadAsAsync<IList<ProjectView>>();
+                    readTask.Wait();
+                    projects = readTask.Result;
+                }
+                else
+                {
+                    projects = Enumerable.Empty<ProjectView>();
+                    ModelState.AddModelError(string.Empty, "Erro no servidor. Contate o Administrador.");
+                }
+                return View(projects);
+            }
+        }
+
+
+        public IActionResult CreateProject()
+        {
+            return View();
+        }
+
+        
+        public IActionResult SaveCreateProject(int companyId, string name, string description,string status, DateTime date)
+        {
+            using (var client = new HttpClient())
+            {
+                var company = new CreateProjectRequest { CompanyId = companyId, Name = name, Description = description, Status = status, DeliveryDate = date };
+                var jsonString = JsonConvert.SerializeObject(company);
+
+                var httpContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                var responseTask = client.PostAsync($"https://localhost:7160/api/Project", httpContent);
+                responseTask.Wait();
+                var result = responseTask.Result;
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    ModelState.AddModelError(string.Empty, "Erro no servidor. Contate o Administrador.");
+                }
+                return RedirectToAction("Projects");
+            }
+        }
+
+        public IActionResult DeleteProject(string id)
+        {
+            using (var client = new HttpClient())
+            {
+                var responseTask = client.DeleteAsync($"https://localhost:7160/api/Project?id={id}");
+                responseTask.Wait();
+                var result = responseTask.Result;
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    ModelState.AddModelError(string.Empty, "Erro no servidor. Contate o Administrador.");
+                }
+            }
+            return RedirectToAction("Projects");
+        }
+
+        public IActionResult EditProject(int id, int companyId, string name, string description, DateTime date)
+        {
+            return View();
+        }
+
+        public IActionResult SaveEditProject(int id, int companyId, string name, string description, DateTime date)
+        {
+            using (var client = new HttpClient())
+            {
+                var project = new Company(id, companyId, name,description,date);
+                var jsonString = JsonConvert.SerializeObject(project);
+
+                var httpContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                var responseTask = client.PutAsync($"https://localhost:7160/api/Project?id={id}", httpContent);
+                responseTask.Wait();
+                var result = responseTask.Result;
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    ModelState.AddModelError(string.Empty, "Erro no servidor. Contate o Administrador.");
+                }
+            }
+            return RedirectToAction("Projects");
+        }
+
+        
+
+
+        public IActionResult DetailProject(int id, string name, string description)
+        {
+            var project = new ProjectView { Id = id, Name = name, Description = name };
+            return View(project);
+        }
+
+        public IActionResult ProjectEmployees(int id)
+        {
+            IEnumerable<EmployeeView> employees;
+
+            using (var client = new HttpClient())
+            {
+                var responseTask = client.GetAsync($"https://localhost:7160/api/Project/all/Employees?Id={id}");
                 responseTask.Wait();
                 var result = responseTask.Result;
 
