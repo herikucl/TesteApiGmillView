@@ -1,0 +1,53 @@
+﻿@model IEnumerable<TesteApiGmillView.Models.ProjectView>
+
+@{
+    ViewData["Title"] = "Projects";
+}
+
+<h1>Registered projects</h1>
+
+<p>
+    <a asp-action="CreateProject">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CompanyId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CompanyId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+            <td>
+                    @Html.ActionLink("Edit", "EditCompany", new { id=item.Id, companyId = item.CompanyId, name = item.Name, desc = item.Description }) |
+                    @Html.ActionLink("Details", "DetailCompany", new { id=item.Id, name = item.Name, desc = item.Description }) |
+                @Html.ActionLink("Delete", "DeleteCompany", new {  id=item.Id })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,41 @@
+﻿@model IEnumerable<TesteApiGmillView.Models.CompanyView>
+
+@{
+    ViewData["Title"] = "Index1";
+}
+
+<h1>Registered companies</h1>
+
+<p>
+    <a asp-action="CreateCompany">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "EditCompany", new { id=item.Id, name = item.Name, Address = item.Address }) |
+                @Html.ActionLink("Details", "DetailCompany", new {id=item.Id, name = item.Name, Address = item.Address}) |
+                @Html.ActionLink("Delete", "DeleteCompany", new {  id=item.Id })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
