@@ -10,6 +10,9 @@
     <thead>
         <tr>
             <th>
+                @Html.DisplayNameFor(model => model.CompanyId)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Id)
             </th>
             <th>
@@ -25,21 +28,25 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                   @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CompanyId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.Document)
-            </td>
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Phone)
                 </td>
-        </tr>
-}
+            </tr>
+        }
     </tbody>
 </table>

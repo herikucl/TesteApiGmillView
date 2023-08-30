@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -427,13 +428,6 @@ namespace TesteApiGmillView.Controllers
             }
             return RedirectToAction("Projects");
         }
-
-        public IActionResult AddToProject()
-        {
-            return View();
-        }
-
-
 
 		public IActionResult DetailProject(int id)
 		{
