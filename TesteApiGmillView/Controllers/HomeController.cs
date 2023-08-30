@@ -37,7 +37,7 @@ namespace TesteApiGmillView.Controllers
             return View();
         }
 
-        public IActionResult SaveCreateEmployeer(string name, string document, string phone, int companyId)
+        public IActionResult SaveCreateEmployee(string name, string document, string phone, int companyId)
         {
             using (var client = new HttpClient())
             {
@@ -66,7 +66,7 @@ namespace TesteApiGmillView.Controllers
             {
                 client.BaseAddress = new Uri("https://localhost:7160/api/");
 
-                var responseTask = client.GetAsync("Employee/all");
+                var responseTask = client.GetAsync("Employee/All");
                 responseTask.Wait();
                 var result = responseTask.Result;
 
@@ -105,9 +105,6 @@ namespace TesteApiGmillView.Controllers
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("https://localhost:7160/api/Employee?id=");
-
-
                 var employee = new Employee(id, name, document, phone, companyId);
                 var jsonString = JsonConvert.SerializeObject(employee);
 
@@ -134,11 +131,30 @@ namespace TesteApiGmillView.Controllers
             return View();
         }
 
-        public IActionResult DetailEmployee(int id, string name, string document, string phone, int companyId)
+        public IActionResult DetailEmployee(int id)
         {
-            var company = new EmployeeView { Id = id, Name = name, Document = document,Phone = phone,CompanyId = companyId };
-            return View(company);
-        }
+			IEnumerable<ProjectView> projects;
+
+			using (var client = new HttpClient())
+			{
+				var responseTask = client.GetAsync($"https://localhost:7160/api/Employee/Project?id={id}");
+				responseTask.Wait();
+				var result = responseTask.Result;
+
+				if (result.IsSuccessStatusCode)
+				{
+					var readTask = result.Content.ReadAsAsync<IList<ProjectView>>();
+					readTask.Wait();
+					projects = readTask.Result;
+				}
+				else
+				{
+					projects = Enumerable.Empty<ProjectView>();
+					ModelState.AddModelError(string.Empty, "Erro no servidor. Contate o Administrador.");
+				}
+				return View(projects);
+			}
+		}
 
         public IActionResult EmployeeProjects(int id)
         {
@@ -146,7 +162,7 @@ namespace TesteApiGmillView.Controllers
 
             using (var client = new HttpClient())
             {
-                var responseTask = client.GetAsync($"https://localhost:7160/api/Employee/all/Projects?Id={id}");
+                var responseTask = client.GetAsync($"https://localhost:7160/api/Employee/Project?id={id}");
                 responseTask.Wait();
                 var result = responseTask.Result;
 
@@ -174,9 +190,7 @@ namespace TesteApiGmillView.Controllers
 
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("https://localhost:7160/api/");
-
-                var responseTask = client.GetAsync("Company/all");
+                var responseTask = client.GetAsync("https://localhost:7160/api/Company/All");
                 responseTask.Wait();
                 var result = responseTask.Result;
 
@@ -277,7 +291,7 @@ namespace TesteApiGmillView.Controllers
 
             using (var client = new HttpClient())
             {
-                var responseTask = client.GetAsync($"https://localhost:7160/api/Company/all/Employees?companyId={id}");
+                var responseTask = client.GetAsync($"https://localhost:7160/api/Company/All/Employees?companyId={id}");
                 responseTask.Wait();
                 var result = responseTask.Result;
 
@@ -302,7 +316,7 @@ namespace TesteApiGmillView.Controllers
 
             using (var client = new HttpClient())
             {
-                var responseTask = client.GetAsync($"https://localhost:7160/api/Company/all/Projects?companyId={id}");
+                var responseTask = client.GetAsync($"https://localhost:7160/api/Company/All/Projects?companyId={id}");
                 responseTask.Wait();
                 var result = responseTask.Result;
 
@@ -327,9 +341,7 @@ namespace TesteApiGmillView.Controllers
 
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("https://localhost:7160/api/");
-
-                var responseTask = client.GetAsync("Project/all");
+                var responseTask = client.GetAsync("https://localhost:7160/api/Project/All");
                 responseTask.Wait();
                 var result = responseTask.Result;
 
@@ -355,12 +367,12 @@ namespace TesteApiGmillView.Controllers
         }
 
         
-        public IActionResult SaveCreateProject(int companyId, string name, string description,string status, DateTime date)
+        public IActionResult SaveCreateProject(int companyId, string name, string description,string status)
         {
             using (var client = new HttpClient())
             {
-                var company = new CreateProjectRequest { CompanyId = companyId, Name = name, Description = description, Status = status, DeliveryDate = date };
-                var jsonString = JsonConvert.SerializeObject(company);
+                var project = new CreateProjectRequest { CompanyId = companyId, Name = name, Description = description, Status = status};
+                var jsonString = JsonConvert.SerializeObject(project);
 
                 var httpContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
                 var responseTask = client.PostAsync($"https://localhost:7160/api/Project", httpContent);
@@ -391,16 +403,16 @@ namespace TesteApiGmillView.Controllers
             return RedirectToAction("Projects");
         }
 
-        public IActionResult EditProject(int id, int companyId, string name, string description, DateTime date)
+        public IActionResult EditProject(int id, int companyId, string name, string description)
         {
             return View();
         }
 
-        public IActionResult SaveEditProject(int id, int companyId, string name, string description, DateTime date)
+        public IActionResult SaveEditProject(int id, int companyId, string name, string description)
         {
             using (var client = new HttpClient())
             {
-                var project = new Company(id, companyId, name,description,date);
+                var project = new Project(id, companyId, name,description);
                 var jsonString = JsonConvert.SerializeObject(project);
 
                 var httpContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
@@ -416,22 +428,45 @@ namespace TesteApiGmillView.Controllers
             return RedirectToAction("Projects");
         }
 
-        
-
-
-        public IActionResult DetailProject(int id, string name, string description)
+        public IActionResult AddToProject()
         {
-            var project = new ProjectView { Id = id, Name = name, Description = name };
-            return View(project);
+            return View();
         }
 
-        public IActionResult ProjectEmployees(int id)
+
+
+		public IActionResult DetailProject(int id)
+		{
+			IEnumerable<EmployeeView> employees;
+
+			using (var client = new HttpClient())
+			{
+				var responseTask = client.GetAsync($"https://localhost:7160/api/Project/Employee?id={id}");
+				responseTask.Wait();
+				var result = responseTask.Result;
+
+				if (result.IsSuccessStatusCode)
+				{
+					var readTask = result.Content.ReadAsAsync<IList<EmployeeView>>();
+					readTask.Wait();
+					employees = readTask.Result;
+				}
+				else
+				{
+					employees = Enumerable.Empty<EmployeeView>();
+					ModelState.AddModelError(string.Empty, "Erro no servidor. Contate o Administrador.");
+				}
+				return View(employees);
+			}
+		}
+
+		public IActionResult ProjectEmployees(int id)
         {
             IEnumerable<EmployeeView> employees;
 
             using (var client = new HttpClient())
             {
-                var responseTask = client.GetAsync($"https://localhost:7160/api/Project/all/Employees?Id={id}");
+                var responseTask = client.GetAsync($"https://localhost:7160/api/Project/Employee?id={id}");
                 responseTask.Wait();
                 var result = responseTask.Result;
 

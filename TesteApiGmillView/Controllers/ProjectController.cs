@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TesteApiGmillView.Domain.Commands;
+using TesteApiGmillView.Domain.Handlers.ProjectsH;
 using TesteApiGmillView.Domain.Requests.CompanyR;
 using TesteApiGmillView.Domain.Requests.EmployeeR;
 using TesteApiGmillView.Domain.Requests.ProjectR;
@@ -25,7 +26,7 @@ namespace TesteApiGmillView.Controllers
         }
 
         [HttpPost]
-        [Route("/api/[controller]/employee")]
+        [Route("/api/[controller]/Employee")]
         public async Task<GenericResponse> AddEmployeeToProject([FromBody] AddEmployeeToProjectRequest request)
         {
             return await _mediator.Send(request);
@@ -45,7 +46,7 @@ namespace TesteApiGmillView.Controllers
         }
 
         [HttpGet]
-        [Route("/api/[controller]/all")]
+        [Route("/api/[controller]/All")]
         public async Task<ActionResult<List<GenericResponse>>> GetProjects()
         {
             try
@@ -60,7 +61,23 @@ namespace TesteApiGmillView.Controllers
             }
         }
 
-        [HttpDelete]
+		[HttpGet]
+		[Route("/api/[controller]/Employee")]
+		public async Task<ActionResult<List<GenericResponse>>> GetProjectEmployeesHandler(int id)
+		{
+			try
+			{
+				var result = await _mediator.Send(new GetProjectEmployeesRequest{ Id = id});
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+
+		[HttpDelete]
         public async Task<GenericResponse> DeleteProject(int id)
         {
             return await _mediator.Send(new DeleteProjectRequest { Id = id });

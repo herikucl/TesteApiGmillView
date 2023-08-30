@@ -6,12 +6,32 @@ namespace TesteApiGmillView.Models
 {
     public class Project
     {
-        public int Id { get; private set; }
+        public Project(int id, int companyId, string name, string description)
+        {
+            Id = id;
+            CompanyId = companyId;
+            Name = name;
+            Description = description;
+        }
+
+        public Project()
+        {
+                
+        }
+
+		public Project(int id, string name, string description, string status, int companyId)
+		{
+			Id = id;
+			Name = name;
+			Description = description;
+			Status = status;
+			CompanyId = companyId;
+		}
+
+		public int Id { get; private set; }
         public int CompanyId { get; private set; }
         public string Name { get; private set; }
         public string Description { get; private set; }
-        public DateTime ReleaseDate { get; private set; } = DateTime.UtcNow;
-        public DateTime DeliveryDate { get; private set; }
 
         public string Status { get; private set; }
 

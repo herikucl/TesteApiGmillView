@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TesteApiGmillView.Domain.Commands;
 using TesteApiGmillView.Domain.Requests.CompanyR;
 using TesteApiGmillView.Domain.Requests.EmployeeR;
+using TesteApiGmillView.Domain.Requests.ProjectR;
 using TesteApiGmillView.Domain.Response;
 
 namespace TesteApiGmillView.Controllers
@@ -37,7 +38,7 @@ namespace TesteApiGmillView.Controllers
         }
 
         [HttpGet]
-        [Route("/api/[controller]/all")]
+        [Route("/api/[controller]/All")]
         public async Task<ActionResult<List<GenericResponse>>> GetEmployees()
         {
             try
@@ -52,7 +53,24 @@ namespace TesteApiGmillView.Controllers
             }
         }
 
-        [HttpDelete]
+
+		[HttpGet]
+		[Route("/api/[controller]/Project")]
+		public async Task<ActionResult<List<GenericResponse>>> GetEmployeeProjects(int id)
+		{
+			try
+			{
+				var result = await _mediator.Send(new GetEmployeeProjectsRequest { Id = id });
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+
+		[HttpDelete]
         public async Task<GenericResponse> DeleteEmployee(int id)
         {
             return await _mediator.Send(new DeleteEmployeeRequest { Id = id });

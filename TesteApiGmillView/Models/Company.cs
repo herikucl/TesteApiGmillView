@@ -15,15 +15,6 @@
             Address = address;
         }
 
-        public Company(int id, int companyId, string name, string description, DateTime date)
-        {
-            Id = id;
-            CompanyId = companyId;
-            Name = name;
-            Description = description;
-            Date = date;
-        }
-
         public int Id { get; private set; }
         public string Name { get; private set; }
         public string Address { get; private set; }

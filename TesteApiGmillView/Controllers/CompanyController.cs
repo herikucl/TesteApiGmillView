@@ -37,7 +37,7 @@ namespace TesteApiGmillView.Controllers
         }
 
         [HttpGet]
-        [Route("/api/[controller]/all")]
+        [Route("/api/[controller]/All")]
         public async Task<ActionResult<List<GenericResponse>>> GetCompanies()
         {
             try
@@ -53,7 +53,7 @@ namespace TesteApiGmillView.Controllers
         }
 
         [HttpGet]
-        [Route("/api/[controller]/all/Employees")]
+        [Route("/api/[controller]/All/Employees")]
         public async Task<ActionResult<List<GenericResponse>>> GetCompanyEmployees(int companyId)
         {
             try
@@ -69,7 +69,7 @@ namespace TesteApiGmillView.Controllers
         }
 
         [HttpGet]
-        [Route("/api/[controller]/all/Projects")]
+        [Route("/api/[controller]/All/Projects")]
         public async Task<ActionResult<List<GenericResponse>>> GetCompanyProjects(int companyId)
         {
             try

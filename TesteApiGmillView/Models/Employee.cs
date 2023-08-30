@@ -21,7 +21,20 @@ namespace TesteApiGmillView.Models
             CompanyId = companyId;
         }
 
-        public int Id { get; private set; }
+        public Employee()
+        {
+                
+        }
+
+		public Employee(int id, string name, string document, string phone)
+		{
+			Id = id;
+			Name = name;
+			Document = document;
+			Phone = phone;
+		}
+
+		public int Id { get; private set; }
         public int CompanyId { get; private set; }
         public string Name { get; private set; }
         public string Document { get; private set; }

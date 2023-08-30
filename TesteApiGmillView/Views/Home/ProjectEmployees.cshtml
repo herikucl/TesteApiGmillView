@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<TesteApiGmillView.Models.EmployeeView>
 
 @{
-    ViewData["Title"] = "Employee";
+    ViewData["Title"] = "Employees";
 }
 
 <h1>Registered employees in this project</h1>
@@ -39,11 +39,6 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Phone)
                 </td>
-            <td>
-                @Html.ActionLink("Edit", "EditEmployee", new { id=item.Id, name = item.Name,Document = item.Document,phone = item.Phone }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "DeleteEmployee", new {  id=item.Id })
-            </td>
         </tr>
 }
     </tbody>

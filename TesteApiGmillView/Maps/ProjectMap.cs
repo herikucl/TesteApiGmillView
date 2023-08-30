@@ -23,12 +23,6 @@ namespace TesteApiGmillView.Maps
             builder.Property(x => x.Description)
                 .HasColumnName("descricao");
 
-            builder.Property(x => x.ReleaseDate)
-                .HasColumnName("datainicio");
-
-            builder.Property(x => x.DeliveryDate)
-                .HasColumnName("dataentrega");
-
             builder.Property(x => x.CompanyId)
                 .HasColumnName("idempresa");
 
