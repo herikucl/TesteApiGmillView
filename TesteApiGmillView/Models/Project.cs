@@ -28,7 +28,17 @@ namespace TesteApiGmillView.Models
 			CompanyId = companyId;
 		}
 
-		public int Id { get; private set; }
+        public Project(Project project)
+        {
+            Id = project.Id;
+            CompanyId = project.CompanyId;
+            Name = project.Name;
+            Description = project.Description;
+            Status = project.Status;
+        }
+
+
+        public int Id { get; private set; }
         public int CompanyId { get; private set; }
         public string Name { get; private set; }
         public string Description { get; private set; }

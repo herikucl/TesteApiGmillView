@@ -23,6 +23,5 @@
         public ICollection<Project> Projects { get; set; }
         public int CompanyId { get; }
         public string Description { get; }
-        public DateTime Date { get; }
     }
 }

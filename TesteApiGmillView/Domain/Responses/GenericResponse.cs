@@ -9,13 +9,14 @@ namespace TesteApiGmillView.Domain.Response
 {
     public class GenericResponse
     {
+        public bool IsSucess { get; set; }
         public string Message { get; set; }
 
-        public static GenericResponse Fail(string message) => new GenericResponse { Message = message };
-        public static GenericResponse<T> Fail<T>(string message) => new GenericResponse<T> { Message = message };
+        public static GenericResponse Fail(string message) => new GenericResponse { IsSucess = false, Message = message };
+        public static GenericResponse<T> Fail<T>(string message) => new GenericResponse<T> { IsSucess = false, Message = message };
 
-        public static GenericResponse Ok(string message) => new GenericResponse {Message = message };
-        public static GenericResponse<T> Ok<T>(T data) => new GenericResponse<T> {Data = data };
+        public static GenericResponse Ok(string message) => new GenericResponse { IsSucess = true, Message = message };
+        public static GenericResponse<T> Ok<T>(T data) => new GenericResponse<T> { IsSucess = true, Data = data };
     }
 
     public class GenericResponse<T> : GenericResponse

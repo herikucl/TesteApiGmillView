@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Design;
+using System.Xml.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace TesteApiGmillView.Models
@@ -21,9 +22,13 @@ namespace TesteApiGmillView.Models
             CompanyId = companyId;
         }
 
-        public Employee()
+        public Employee(Employee employee)
         {
-                
+            Id = employee.Id;
+            Name = employee.Name;
+            Document = employee.Document;
+            Phone = employee.Phone;
+            CompanyId = employee.CompanyId;
         }
 
 		public Employee(int id, string name, string document, string phone)

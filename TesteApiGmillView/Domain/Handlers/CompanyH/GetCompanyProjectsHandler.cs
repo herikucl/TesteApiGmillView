@@ -10,7 +10,7 @@ using TesteApiGmillView.Domain.Requests.ProjectR;
 using TesteApiGmillView.Domain.Response;
 using TesteApiGmillView.Models;
 
-namespace TesteApiGmillView.Domain.Handlers.ProjectH
+namespace TesteApiGmillView.Domain.Handlers.CompanyH
 {
     public class GetCompanyProjectsHandler : IRequestHandler<GetCompanyProjectsRequest, List<Project>>
     {
@@ -24,9 +24,20 @@ namespace TesteApiGmillView.Domain.Handlers.ProjectH
 
         public async Task<List<Project>> Handle(GetCompanyProjectsRequest request, CancellationToken cancellationToken)
         {
-        var projects = await _context.Projects.Where(x => x.CompanyId == request.CompanyId).ToListAsync();
+            var result = await _context.Companies.FirstOrDefaultAsync(x => x.Id == request.CompanyId);
 
-            if (projects == null)
+            if(result == null)
+                throw new Exception("Empresa não encontrada");
+
+            List<Project> projects = new List<Project>();
+            var data = await _context.Projects.Where(x => x.CompanyId == request.CompanyId).ToListAsync();
+
+            foreach (var item in data)
+            {
+                projects.Add(new Project(item));
+            }
+
+            if (projects.Count == 0)
                 throw new Exception("Nenhum projeto foi encontrado nesta empresa");
             return projects;
         }
